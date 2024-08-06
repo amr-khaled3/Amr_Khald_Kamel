@@ -1,6 +1,7 @@
 char count = 0;
 char key[] = {0, 16 ,32, 48};
 char i = 0;
+char j = 0;
 char flag = 0;
 char OldPortValue = 0;
 void Automatic();
@@ -20,15 +21,39 @@ void main() {
  portD.b2 = 1;//Green west
  Mode();
  }
+ void Mode()
+{  while(1)
+  {
+     if(portA.b0 == 1)
+     {
+      Automatic();
+     }
+     else
+     {
+      Manual();
+     }
+   }
+}
 void Automatic()
-{
+{   
+     portC.b2 = 1;
+     portC.b3 = 1;
+     portC.b0 = 1;
+     portC.b1 = 1;
      for(count = 0 ; count < 10; count++)     //21  i = 2 , count = 1
      {
          portB = count + key[i];
+         if(portB == 0)
+         {
+          portd.b3 = 1;//RED south
+          portD.b2 = 1;//Green west
+          portD.b0 = 0; //red west
+          portD.b5 = 0; //green south
+         }
          if(portB == 32) // 20 segment 0010 0010     //west
          {
-         portD.b2 = 0;
-         portD.b0 = 1; //RED west
+          portD.b2 = 0;
+          portD.b0 = 1; //RED west
          }
          if(portB == 35) //south
          {
@@ -43,14 +68,14 @@ void Automatic()
          if(portB == 53)  //west
          {
            portD.b0 = 0;
-           portD.b1 = 1;  //YELLOW wesr
+           portD.b1 = 1;  //YELLOW west
          }
-         delay_ms(150);
+         delay_ms(500);
          if(portB == 55) //west         //37  : 0011 0111
          {
-          i = -1;
+          i =- 1;
           count = 10;
-          portD.b5 =0;
+          portD.b5 = 0;
           portD.b1 = 0;
           portd.b3 = 1;//RED south
           portD.b2 = 1;//Green west
@@ -59,38 +84,33 @@ void Automatic()
          {
             i = -1;
             portB = 0;
+            flag = 0;
             Manual();
             break;
          }
      }
      i++;
 }
-void Mode()
-{  while(1)
-  {
-     if(portA.b0 == 1)
-     {
-      Automatic();
-     }
-     else
-     {
-      Manual();
-     }
-   }
-}
  void Manual()
  {
    if(flag == 0)
    {
+     portD = 0;
      if(portA.b1 == 1)
-     {   portD.b0 = 0;
-         portD.b5 = 0;
-         portD.b2 = 0;
+     {   
+        portC.b2 = 1;
+        portC.b3 = 1;
+        portC.b0 = 0;
+         portC.b1 = 0;
         //yellow west on 3 sec :
         portD.b1 = 1;
         //south red on :
         portD.b3 = 1;
-        delay_ms(3000);
+       for(j = 0; j < 4; j++)
+       {
+        portB = j;
+        delay_ms(1000);
+       }
         //turn off yellow west
         portD.b1 = 0;
         //west green on :
@@ -98,14 +118,19 @@ void Mode()
       }
       else  //portA.b1 == 0
       {
-        portD.b2 = 0;
-        portD.b5 = 0;
-        portD.b3 = 0;
+        portC.b0 = 1;
+        portC.b1 = 1;
+        portC.b2 = 0;
+        portC.b3 = 0;
        //yellow south on 3 sec :
         portD.b4 = 1;
        //west red on :
         portD.b0 = 1;
-        delay_ms(3000);
+        for(j = 0; j < 4; j++)
+       {
+        portB = j;
+        delay_ms(1000);
+       }
        //turn off yellow south
         portD.b4 = 0;
        //south green on :
